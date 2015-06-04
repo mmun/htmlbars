@@ -1,16 +1,22 @@
 /*globals SVGElement, SVGLinearGradientElement */
-import { hooks } from "../htmlbars-runtime";
+import defaultHooks from "../htmlbars-runtime/hooks";
 import render, { manualElement, attachAttributes } from "../htmlbars-runtime/render";
 import { compile } from "../htmlbars-compiler/compiler";
 import { hostBlock, wrap } from "../htmlbars-runtime/hooks";
 import { equalTokens } from "../htmlbars-test-helpers";
 import { clearMorph, blockFor } from "../htmlbars-util/template-utils";
+import { merge } from "../htmlbars-util/object-utils";
 import DOMHelper from "../dom-helper";
 
-let env;
+let env, hooks;
 
 QUnit.module("htmlbars-runtime", {
   setup() {
+    hooks = merge({}, defaultHooks);
+    hooks.keywords = merge({}, defaultHooks.keywords);
+    hooks.exprs = merge({}, defaultHooks.exprs);
+    hooks.nodes = merge({}, defaultHooks.nodes);
+
     env = {
       dom: new DOMHelper(),
       hooks: hooks,

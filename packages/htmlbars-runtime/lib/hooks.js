@@ -1025,7 +1025,6 @@ export default {
   bindSelf: bindSelf,
   bindScope: bindScope,
   classify: classify,
-  concat: concat,
   createFreshScope: createFreshScope,
   getChild: getChild,
   getRoot: getRoot,
@@ -1034,7 +1033,6 @@ export default {
   keywords: keywords,
   linkRenderNode: linkRenderNode,
   partial: partial,
-  subexpr: subexpr,
 
   // fundamental hooks with good default behavior
   bindBlock: bindBlock,
@@ -1055,8 +1053,13 @@ export default {
 
   // derived hooks
   createScope: createScope,
-  get: get,
   keyword: keyword,
+
+  exprs: {
+    concat: concat,
+    get: get,
+    subexpr: subexpr
+  },
 
   nodes: {
     attribute: attribute,

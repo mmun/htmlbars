@@ -74,20 +74,20 @@ var base = {
 
   // [ 'get', path ]
   get: function(node, env, scope) {
-    return env.hooks.get(env, scope, node[1]);
+    return env.hooks.exprs.get(env, scope, node[1]);
   },
 
   // [ 'subexpr', path, params, hash ]
   subexpr: function(node, env, scope) {
     var path = node[1], params = node[2], hash = node[3];
-    return env.hooks.subexpr(env, scope, path,
+    return env.hooks.exprs.subexpr(env, scope, path,
                              this.acceptParams(params, env, scope),
                              this.acceptHash(hash, env, scope));
   },
 
   // [ 'concat', parts ]
   concat: function(node, env, scope) {
-    return env.hooks.concat(env, this.acceptParams(node[1], env, scope));
+    return env.hooks.exprs.concat(env, this.acceptParams(node[1], env, scope));
   },
 
   linkParamsAndHash: function(env, scope, morph, path, params, hash) {
@@ -141,7 +141,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     if (morph.linkedParams) {
       params = morph.linkedParams.params;
     } else {
-      params = [env.hooks.get(env, scope, path)];
+      params = [env.hooks.exprs.get(env, scope, path)];
     }
 
     linkParams(env, scope, morph, '@range', params, null);

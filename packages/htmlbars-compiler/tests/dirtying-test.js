@@ -17,6 +17,9 @@ function registerHelper(name, callback) {
 function commonSetup() {
   hooks = merge({}, defaultHooks);
   hooks.keywords = merge({}, defaultHooks.keywords);
+  hooks.exprs = merge({}, defaultHooks.exprs);
+  hooks.nodes = merge({}, defaultHooks.nodes);
+
   helpers = {};
   partials = {};
 
@@ -521,7 +524,7 @@ test("Returning true from `linkRenderNodes` makes the value itself stable across
   };
 
   var concatCalled = 0;
-  hooks.concat = function(env, params) {
+  hooks.exprs.concat = function(env, params) {
     ok(++concatCalled === 1, "The concat hook is only invoked one time (invoked " + concatCalled + " times)");
     return function() {
       return params[0].value + params[1] + params[2].value;
