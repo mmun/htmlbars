@@ -539,9 +539,9 @@ export function handleRedirect(morph, env, scope, path, params, hash, template, 
   var redirect = env.hooks.classify(env, scope, path);
   if (redirect) {
     switch(redirect) {
-      case 'component': env.hooks.component(morph, env, scope, path, params, hash, {default: template, inverse}, visitor); break;
-      case 'inline': env.hooks.inline(morph, env, scope, path, params, hash, visitor); break;
-      case 'block': env.hooks.block(morph, env, scope, path, params, hash, template, inverse, visitor); break;
+      case 'component': env.hooks.nodes.component(morph, env, scope, path, params, hash, {default: template, inverse}, visitor); break;
+      case 'inline': env.hooks.nodes.inline(morph, env, scope, path, params, hash, visitor); break;
+      case 'block': env.hooks.nodes.block(morph, env, scope, path, params, hash, template, inverse, visitor); break;
       default: throw new Error("Internal HTMLBars redirection to " + redirect + " not supported");
     }
     return true;
@@ -978,7 +978,7 @@ export function getCellOrValue(reference) {
 
 export function component(morph, env, scope, tagName, params, attrs, templates, visitor) {
   if (env.hooks.hasHelper(env, scope, tagName)) {
-    return env.hooks.block(morph, env, scope, tagName, params, attrs, templates.default, templates.inverse, visitor);
+    return env.hooks.nodes.block(morph, env, scope, tagName, params, attrs, templates.default, templates.inverse, visitor);
   }
 
   componentFallback(morph, env, scope, tagName, attrs, templates.default);
@@ -1025,7 +1025,6 @@ export default {
   bindSelf: bindSelf,
   bindScope: bindScope,
   classify: classify,
-  component: component,
   concat: concat,
   createFreshScope: createFreshScope,
   getChild: getChild,
@@ -1055,12 +1054,16 @@ export default {
   didRenderNode: null,
 
   // derived hooks
-  attribute: attribute,
-  block: block,
   createScope: createScope,
-  element: element,
   get: get,
-  inline: inline,
-  range: range,
-  keyword: keyword
+  keyword: keyword,
+
+  nodes: {
+    attribute: attribute,
+    block: block,
+    component: component,
+    element: element,
+    inline: inline,
+    range: range,
+  }
 };

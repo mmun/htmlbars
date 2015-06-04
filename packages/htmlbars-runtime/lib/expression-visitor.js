@@ -111,7 +111,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     var paramsAndHash = this.linkParamsAndHash(env, scope, morph, path, params, hash);
 
     morph.isDirty = morph.isSubtreeDirty = false;
-    env.hooks.block(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1],
+    env.hooks.nodes.block(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1],
                            templateId === null ? null : template.templates[templateId],
                            inverseId === null ? null : template.templates[inverseId],
                            visitor);
@@ -123,7 +123,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     var paramsAndHash = this.linkParamsAndHash(env, scope, morph, path, params, hash);
 
     morph.isDirty = morph.isSubtreeDirty = false;
-    env.hooks.inline(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1], visitor);
+    env.hooks.nodes.inline(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1], visitor);
   },
 
   // [ 'content', path ]
@@ -133,7 +133,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     morph.isDirty = morph.isSubtreeDirty = false;
 
     if (isHelper(env, scope, path)) {
-      env.hooks.inline(morph, env, scope, path, [], {}, visitor);
+      env.hooks.nodes.inline(morph, env, scope, path, [], {}, visitor);
       return;
     }
 
@@ -145,7 +145,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     }
 
     linkParams(env, scope, morph, '@range', params, null);
-    env.hooks.range(morph, env, scope, path, params[0], visitor);
+    env.hooks.nodes.range(morph, env, scope, path, params[0], visitor);
   },
 
   // [ 'element', path, params, hash ]
@@ -154,7 +154,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     var paramsAndHash = this.linkParamsAndHash(env, scope, morph, path, params, hash);
 
     morph.isDirty = morph.isSubtreeDirty = false;
-    env.hooks.element(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1], visitor);
+    env.hooks.nodes.element(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1], visitor);
   },
 
   // [ 'attribute', name, value ]
@@ -163,7 +163,7 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     var paramsAndHash = this.linkParamsAndHash(env, scope, morph, '@attribute', [value], null);
 
     morph.isDirty = morph.isSubtreeDirty = false;
-    env.hooks.attribute(morph, env, scope, name, paramsAndHash[0][0]);
+    env.hooks.nodes.attribute(morph, env, scope, name, paramsAndHash[0][0]);
   },
 
   // [ 'component', path, attrs, templateId, inverseId ]
@@ -176,14 +176,14 @@ export var AlwaysDirtyVisitor = merge(createObject(base), {
     };
 
     morph.isDirty = morph.isSubtreeDirty = false;
-    env.hooks.component(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1],
+    env.hooks.nodes.component(morph, env, scope, path, paramsAndHash[0], paramsAndHash[1],
                         templates, visitor);
   },
 
   // [ 'attributes', template ]
   attributes: function(node, morph, env, scope, parentMorph, visitor) {
     let template = node[1];
-    env.hooks.attributes(morph, env, scope, template, parentMorph, visitor);
+    env.hooks.nodes.attributes(morph, env, scope, template, parentMorph, visitor);
   }
 });
 
