@@ -30,73 +30,73 @@ import { validateChildMorphs, linkParams } from "../htmlbars-util/morph-utils";
   * concat
 */
 
-var base = {
-  acceptExpression: function(node, env, scope) {
-    var ret = { value: null };
+function acceptExpression(node, env, scope) {
+  var ret = { value: null };
 
-    // Primitive literals are unambiguously non-array representations of
-    // themselves.
-    if (typeof node !== 'object' || node === null) {
-      ret.value = node;
-      return ret;
-    }
-
-    switch(node[0]) {
-      // can be used by manualElement
-      case 'value': ret.value = node[1]; break;
-      case 'get': ret.value = this.get(node, env, scope); break;
-      case 'subexpr': ret.value = this.subexpr(node, env, scope); break;
-      case 'concat': ret.value = this.concat(node, env, scope); break;
-    }
-
+  // Primitive literals are unambiguously non-array representations of
+  // themselves.
+  if (typeof node !== 'object' || node === null) {
+    ret.value = node;
     return ret;
-  },
+  }
 
-  acceptParams: function(nodes, env, scope) {
-    var arr = new Array(nodes.length);
+  switch(node[0]) {
+    // can be used by manualElement
+    case 'value': ret.value = node[1]; break;
+    case 'get': ret.value = get(node, env, scope); break;
+    case 'subexpr': ret.value = subexpr(node, env, scope); break;
+    case 'concat': ret.value = concat(node, env, scope); break;
+  }
 
-    for (var i=0, l=nodes.length; i<l; i++) {
-      arr[i] = this.acceptExpression(nodes[i], env, scope).value;
-    }
+  return ret;
+}
 
-    return arr;
-  },
+function acceptParams(nodes, env, scope) {
+  var arr = new Array(nodes.length);
 
-  acceptHash: function(pairs, env, scope) {
-    var object = {};
+  for (var i=0, l=nodes.length; i<l; i++) {
+    arr[i] = acceptExpression(nodes[i], env, scope).value;
+  }
 
-    for (var i=0, l=pairs.length; i<l; i += 2) {
-      object[pairs[i]] = this.acceptExpression(pairs[i+1], env, scope).value;
-    }
+  return arr;
+}
 
-    return object;
-  },
+function acceptHash(pairs, env, scope) {
+  var object = {};
 
-  // [ 'get', path ]
-  get: function(node, env, scope) {
-    return env.hooks.exprs.get(env, scope, node[1]);
-  },
+  for (var i=0, l=pairs.length; i<l; i += 2) {
+    object[pairs[i]] = acceptExpression(pairs[i+1], env, scope).value;
+  }
 
-  // [ 'subexpr', path, params, hash ]
-  subexpr: function(node, env, scope) {
-    var path = node[1], params = node[2], hash = node[3];
-    return env.hooks.exprs.subexpr(env, scope, path,
-                             this.acceptParams(params, env, scope),
-                             this.acceptHash(hash, env, scope));
-  },
+  return object;
+}
 
-  // [ 'concat', parts ]
-  concat: function(node, env, scope) {
-    return env.hooks.exprs.concat(env, this.acceptParams(node[1], env, scope));
-  },
+// [ 'get', path ]
+function get(node, env, scope) {
+  return env.hooks.exprs.get(env, scope, node[1]);
+}
 
+// [ 'subexpr', path, params, hash ]
+function subexpr(node, env, scope) {
+  var path = node[1], params = node[2], hash = node[3];
+  return env.hooks.exprs.subexpr(env, scope, path,
+                           acceptParams(params, env, scope),
+                           acceptHash(hash, env, scope));
+}
+
+// [ 'concat', parts ]
+function concat(node, env, scope) {
+  return env.hooks.exprs.concat(env, acceptParams(node[1], env, scope));
+}
+
+var base = {
   linkParamsAndHash: function(env, scope, morph, path, params, hash) {
     if (morph.linkedParams) {
       params = morph.linkedParams.params;
       hash = morph.linkedParams.hash;
     } else {
-      params = params && this.acceptParams(params, env, scope);
-      hash = hash && this.acceptHash(hash, env, scope);
+      params = params && acceptParams(params, env, scope);
+      hash = hash && acceptHash(hash, env, scope);
     }
 
     linkParams(env, scope, morph, path, params, hash);
