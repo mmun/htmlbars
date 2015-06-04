@@ -10,44 +10,46 @@
 */
 
 export function acceptParams(nodes, env, scope) {
-  var arr = new Array(nodes.length);
+  let array = new Array(nodes.length);
 
-  for (var i=0, l=nodes.length; i<l; i++) {
-    arr[i] = acceptExpression(nodes[i], env, scope).value;
+  for (let i = 0, l = nodes.length; i < l; i++) {
+    array[i] = acceptExpression(nodes[i], env, scope).value;
   }
 
-  return arr;
+  return array;
 }
 
 export function acceptHash(pairs, env, scope) {
-  var object = {};
+  let object = {};
 
-  for (var i=0, l=pairs.length; i<l; i += 2) {
-    object[pairs[i]] = acceptExpression(pairs[i+1], env, scope).value;
+  for (let i = 0, l = pairs.length; i < l; i += 2) {
+    let key = pairs[i];
+    let value = pairs[i+1];
+
+    object[key] = acceptExpression(value, env, scope).value;
   }
 
   return object;
 }
 
 function acceptExpression(node, env, scope) {
-  var ret = { value: null };
-
   // Primitive literals are unambiguously non-array representations of
   // themselves.
   if (typeof node !== 'object' || node === null) {
-    ret.value = node;
-    return ret;
+    return { value: node };
+  } else {
+    return { value: evaluateNode(node, env, scope) };
   }
+}
 
-  switch(node[0]) {
+function evaluateNode(node, env, scope) {
+  switch (node[0]) {
     // can be used by manualElement
-    case 'value': ret.value = node[1]; break;
-    case 'get': ret.value = get(node, env, scope); break;
-    case 'subexpr': ret.value = subexpr(node, env, scope); break;
-    case 'concat': ret.value = concat(node, env, scope); break;
+    case 'value': return node[1];
+    case 'get': return get(node, env, scope);
+    case 'subexpr': return subexpr(node, env, scope);
+    case 'concat': return concat(node, env, scope);
   }
-
-  return ret;
 }
 
 function get(node, env, scope) {
